@@ -1,3 +1,10 @@
-# Statistical Data management
+# Class github for ML and SDM
 
-This is my repo for SDM code.
+### Plugs
+
+`coc-r-lsp` for R lsp support in neovim  
+requires `install.packages("languageserver")`  
+
+Install R with `yay -S r`  
+
+
