@@ -11,7 +11,8 @@
 ##  Use this text file as template. Submit on Brightspace
 ##  under "Assessment" -> "Assignemnt 1".
 ##
-##  Refer to Intro to R-studio video list for basic idea of how to do these tasks.
+##  Refer to Intro to R-studio video list for basic idea of how to
+##      do these tasks.
 ##  For particular functions, you may have to google.
 
 
@@ -31,8 +32,10 @@
 # 4. Plot histogram of above sample.
 
 
-# 5. Overlay theoretical pdf of Chi-square with df 5 over the histogram plot above.
-#    Overlayed pdf must be in green, and must span entire x-axis of the histogram.
+# 5. Overlay theoretical pdf of Chi-square with df 5 over the
+##      histogram plot above.
+#    Overlayed pdf must be in green, and must span entire x
+#       axis of the histogram.
 
 
 # 6. Use following code to generate 100 by 30 matrix:
@@ -45,7 +48,8 @@
 
 
 
-# 7. Write a code that counts how many rows in the 25th column is greater than 5.
+# 7. Write a code that counts how many rows in the 25th column is
+#       greater than 5.
 
 
 
