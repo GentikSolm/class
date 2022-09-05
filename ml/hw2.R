@@ -47,9 +47,11 @@ plot(Age, CCS)
 #    CCS is the response variable.  Use all other columns as
 #       covariates in the model.
 #    How good is the fit?  Any variable that should be removed from the model?
-reg <- lm(sqrt(CCS) ~ . - Fine - Coarse, data = data)
+reg <- lm(CCS ~ . -Coarse-Fine, data = data)
 summary(reg)
     # Removed Fine and Coarse, as they did not have much effect on the fit
+    # The fit does not seem to be good, as the residuals are quite high given
+    # the range of the data set.
 
 # 6. ----------------
 #    In (5) above, is there any indication of non-linearity?  Data supports the
@@ -57,4 +59,5 @@ summary(reg)
 
 plot(reg)
     # Similar to the plots showin in the ch2 video, the data seems to be
-    # non-linear. It does not support the assumption of regressiom model
+    # non-linear. It does not support the assumption of regressiom model,
+    # As looking at the plot of the residuals does not show a linear corelation
