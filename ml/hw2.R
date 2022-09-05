@@ -27,24 +27,34 @@ data <- read_csv("https://nmimoto.github.io/datasets/concrete.csv")
 
 # 2. ----------------
 #    What is the class of each columns?  Is there any qualitative variable?
-
+lapply(data, class) # All are numberic
+    # None are qualitative
 
 # 3. ----------------
 #    Plot scatterplot and histogram of the column "CCS".
-
+attach(data)
+plot(CCS)
+hist(CCS)
 
 # 4. ----------------
 #    Plot scatterplot of "Water" vs "CCS", and "Age" vs "CCS".
 #    Variable "CSS" has to be on the Y-axis.
-
+plot(Water, CCS)
+plot(Age, CCS)
 
 # 5. ----------------
 #    Fit multivariate regression model with OLS using lm() funciton.
-#    CSS is the response variable.  Use all other columns as
+#    CCS is the response variable.  Use all other columns as
 #       covariates in the model.
 #    How good is the fit?  Any variable that should be removed from the model?
-
+reg <- lm(sqrt(CCS) ~ . - Fine - Coarse, data = data)
+summary(reg)
+    # Removed Fine and Coarse, as they did not have much effect on the fit
 
 # 6. ----------------
 #    In (5) above, is there any indication of non-linearity?  Data supports the
 #    assumption of the regression model?  (Hint: Check residual plot)
+
+plot(reg)
+    # Similar to the plots showin in the ch2 video, the data seems to be
+    # non-linear. It does not support the assumption of regressiom model
