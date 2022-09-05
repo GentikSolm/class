@@ -20,7 +20,10 @@
 #    There's no link on the page. Load it directly to R using source() command.
 #    Make sure you are using "tidyverse" package and function read_csv() instead
 #    of read.csv().
+require("tidyverse")
+library(readr)
 
+data <- read_csv("https://nmimoto.github.io/datasets/concrete.csv")
 
 # 2. ----------------
 #    What is the class of each columns?  Is there any qualitative variable?
