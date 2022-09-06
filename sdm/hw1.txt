@@ -1,0 +1,17 @@
+# 1.c
+
+PROC IMPORT DATAFILE="/home/u62253726/birthweight1.csv" OUT=mylib.birthcsv;
+
+PROC PRINT DATA=mylib.birthcsv;
+
+# 1.d
+
+DATA mylib.birthtxt;
+	infile "/home/u62253726/birthweight1.txt"
+	TRUNCOVER;
+	input Ethnic 1 Age 2-3 Smoke $4 PreWeight 5-10 DelWeight 11-16 BreastFed$ 17 BthWeight 18-21 BthLength 22-26;
+	run;
+	
+PROC FORMAT 
+
+PROC PRINT DATA=mylib.birthtxt;
