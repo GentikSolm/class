@@ -1,10 +1,29 @@
-# 1.c
+# Homework 1
 
+## 1.a
+
+![](sdm/spss_data_view.png)
+![](sdm/spss_var_view.png)
+
+## 1.b
+
+![](sdm/excell.png)
+
+## 1.c
+
+![](sdm/birthcsv.png)
+
+```sas
 PROC IMPORT DATAFILE="/home/u62253726/birthweight1.csv" OUT=mylib.birthcsv;
 
 PROC PRINT DATA=mylib.birthcsv;
+```
 
-# 1.d
+## 1.d
+
+![](sdm/sas_infile.png)
+
+```sas
 DATA mylib.birthtxt;
 	infile "C:\Users\jgb38\Downloads\birthweight1.txt"
 	TRUNCOVER;
@@ -37,3 +56,4 @@ PROC PRINT DATA=mylib.birthtxt label;
 	LABEL BthLength='Length of baby at birth';
 	FORMAT Ethnic Race. Smoke Smoke. BreastFed $BreastFed.;
 run;
+```
