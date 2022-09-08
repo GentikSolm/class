@@ -2,16 +2,16 @@
 
 ## 1.a
 
-![](sdm/spss_data_view.png)
-![](sdm/spss_var_view.png)
+![](spss_data_view.png)
+![](spss_var_view.png)
 
 ## 1.b
 
-![](sdm/excell.png)
+![](excell.png)
 
 ## 1.c
 
-![](sdm/birthcsv.png)
+![](birthcsv.png)
 
 ```sas
 PROC IMPORT DATAFILE="/home/u62253726/birthweight1.csv" OUT=mylib.birthcsv;
@@ -21,7 +21,7 @@ PROC PRINT DATA=mylib.birthcsv;
 
 ## 1.d
 
-![](sdm/sas_infile.png)
+![](sas_infile.png)
 
 ```sas
 DATA mylib.birthtxt;
