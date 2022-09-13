@@ -26,6 +26,7 @@
 install.packages("tidyverse")
 library(tidyverse)   # install.packages(tidyverse")
 concrete <- read_csv("https://nmimoto.github.io/datasets/concrete.csv")
+attach(concrete)
 
 # In this assignment, we will fit CCS column with polynomial
 # regression using Age column.
@@ -34,7 +35,7 @@ concrete <- read_csv("https://nmimoto.github.io/datasets/concrete.csv")
 # This means that all "$medv" in IntroR-W3_CrossValidation.txt
 # should be replaced
 # with "$CCS", and all "$lstat" should be replaced with "$Age".
-
+plot(Age, CCS)
 
 
 # 2. ----------------
@@ -43,16 +44,47 @@ concrete <- read_csv("https://nmimoto.github.io/datasets/concrete.csv")
 #    and a testing set with 180 observations.  Separate
 #    the training set into 5-folds of
 # $    170 obs each.
+original <- concrete
+train_size <- 850
+test_size  <- 180
+resp_col_name  <- "CCS"
+num_folds  <- 5
+rand_seed  <- 8346
 
+set.seed(rand_seed)
+ix <- sample(1:nrow(original))
+original_2  <- original[ix, ]
+train_set  <- original_2[1:train_size, ]
+train_resp  <- original_2[1:train_size, resp_col_name]
+test_set  <- original_2[(train_size+1):(train_size+test_size), ]
+test_resp  <- original_2[(train_size+1):(train_size+test_size), resp_col_name]
 
+install.packages("cvTools")
+library("cvTools")
+set.seed(rand_seed)
 
-# 3. ----------------
+folds  <- cvFolds(nrow(train_set), K = num_folds)
+
+cv_train      <- list(train_set[folds$which != 1, ])
+cv_train_resp <- list(train_resp[folds$which != 1, 1])
+cv_valid      <- list(train_set[folds$which == 1, ])
+cv_valid_resp <- list(train_resp[folds$which == 1, 1])
+
+for (k in 2:num_folds) {
+    cv_train[[k]]      <- train_set[folds$which != k, ]
+    cv_train_resp[[k]] <- train_resp[folds$which != k, 1]
+    cv_valid[[k]]      <- train_set[folds$which == k, ]
+    cv_valid_resp[[k]] <- train_resp[folds$which == k, 1]
+}
+
+# 3. ---------------
 #    Using k=3 for the k-fold CV, plot scatterplot of Age vs CCS.
 #    Plot Training set with open black circle,
 #    and Validation set with solid red circle.
 #    (You can use section 1 of the example)
-
-
+k <- 3
+plot(cv_train[[k]]$Age, cv_train[[k]]$CCS, xlab = "lstat", ylab = "medv")
+lines(cv_valid[[k]]$Age, cv_valid[[k]]$CCS, type = "p", col = "red", pch = 19)
 
 # 4. ----------------
 #    For each of the k-fold, (k=1,...5), fit CCS
@@ -62,6 +94,8 @@ concrete <- read_csv("https://nmimoto.github.io/datasets/concrete.csv")
 #    How many observations were there in each training set?
 #    How many observations were there in each validation set?
 
+deg_poly  <-  3
+k  <-  1:5
 
 
 # 5. ----------------
