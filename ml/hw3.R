@@ -23,7 +23,6 @@
 #    load directly.  Make sure you are using "tidyverse" package and
 #    function read_csv() instead of read.csv().
 
-install.packages("tidyverse")
 library(tidyverse)   # install.packages(tidyverse")
 concrete <- read_csv("https://nmimoto.github.io/datasets/concrete.csv")
 attach(concrete)
@@ -59,7 +58,6 @@ train_resp  <- original_2[1:train_size, resp_col_name]
 test_set  <- original_2[(train_size+1):(train_size+test_size), ]
 test_resp  <- original_2[(train_size+1):(train_size+test_size), resp_col_name]
 
-install.packages("cvTools")
 library("cvTools")
 set.seed(rand_seed)
 
@@ -97,13 +95,57 @@ lines(cv_valid[[k]]$Age, cv_valid[[k]]$CCS, type = "p", col = "red", pch = 19)
 deg_poly  <-  3
 k  <-  1:5
 
+mse_train <- mse_valid <- matrix(0, 5)
+for (k in 1:5) {
+    fit01 <- lm(CCS ~ poly(Age, deg_poly), data = cv_train[[k]])
+    summary(fit01)
+    #--- CV Training MSE
+    mse_train[k] <- mean(fit01$residuals^2)
+    #--- CV Validation MSE
+    fit01_pred <- predict(fit01, newdata = cv_valid[[k]])
+    mse_valid[k] <- mean((cv_valid[[k]]$CCS - fit01_pred)^2)
+}
+# MSE
+print(mse_train)
+print(mse_valid)
+
+# Observations in training set
+nrow(cv_train[[2]])
+# Observations in validation set
+nrow(cv_valid[[1]])
 
 # 5. ----------------
 #    Produce deg.poly vs MSE.valid plot, for CCS vs Polinomial of Age.
 #    (You can use section 2.b)
 #    Using the plot, decide on the best value of deg.poly.
 
+mse_train <- mse_valid <- matrix(0, 5, 10)
+for (deg_poly in 1:10) {
+    for (k in 1:5) {
 
+        fit01 <- lm(CCS ~ poly(Age, deg_poly), data = cv_train[[k]])
+        summary(fit01)
+        #--- CV Training MSE
+        mse_train[k, deg_poly] <- mean(fit01$residuals^2)
+        #--- CV Validation MSE
+        fit01_pred <- predict(fit01, newdata = cv_valid[[k]])
+        mse_valid[k, deg_poly] <- mean((cv_valid[[k]]$CCS - fit01_pred)^2)
+    }
+}
+
+av_mse_train <- apply(mse_train, 2, mean)
+av_mse_valid <- apply(mse_valid, 2, mean)
+cbind(av_mse_train, av_mse_valid)
+
+
+# Plot Average MSE
+plot(av_mse_train, type = "o", ylab = "MSE")
+lines(av_mse_valid, type = "o", col = "red")
+legend(2, 40, lty = 1, c("Train MSE", "Valid MSE"), col = c("black", "red"))
+
+# The best value of deg_poly is 4, since
+#   both av_mse_train and av_mse_valid flatline after 4,
+#   and are closest together at 4
 
 # 6. ----------------
 #    Perform the final test fit using the test set.
@@ -111,3 +153,30 @@ k  <-  1:5
 #    Test set (180 obs) is the Test set.
 #    What is the final test MSE?
 #    qhat is the mathematical equation of the your final polynomial?
+
+deg_poly <- 4
+
+fit05 <- lm(CCS ~ poly(Age, deg_poly), data = train_set)
+summary(fit05)
+#- CV Training MSE
+mse_train <- mean(fit05$residuals^2)
+#- CV Validation MSE
+pred <- predict(fit05, newdata = test_set)
+mse_test <- mean((test_set$CCS - pred)^2)
+
+cbind(mse_train, mse_test)
+
+
+# Plot the fit
+plot(train_set$Age, train_set$CCS, xlab = "Age",
+     ylab = "CCS", main = "Final Model")
+lines(test_set$Age, test_set$CCS, col = "red", type = "p", pch = 19)
+ix  <-  sort(train_set$Age, index.return = TRUE)$ix
+lines(train_set$Age[ix], fit05$fitted[ix], lwd = 2, col = "blue")
+text(30, 49, paste("d=", deg_poly, ": MSE.train=", round(mse_train, 2)))
+text(30, 46, paste("          MSE.test=", round(mse_test, 2)), col = "red")
+
+# Final MSE
+print(mse_test)
+# Mathmatical Equiation of final polynomial
+summary(fit05)
