@@ -30,6 +30,9 @@ men's and women's clothing.
 
 # SAS
 
+![](sas1.png)  
+![](sas2.png)    
+![](sas3.png)    
 ```sas
 DATA mylib.polit;
         infile "C:\Users\jgb38\Downloads\PoliticalParty.txt";
