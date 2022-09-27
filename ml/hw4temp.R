@@ -1,0 +1,252 @@
+###
+###  Heart Data - Logistic Regression
+###                              ver 0.0.4
+###
+####################################################
+###--- 0. Preliminary
+###--- 1. Data Separation (Copied from Rtut-CV)
+###--- 2. Logistic Regression with CV
+###--- 3. Final Training/Test fit using best model
+###--- 4. Determine the Best Threshold
+
+
+
+###-------------------------------------------------------
+###--- 0. Preliminary
+
+# Using Heart2 from https://nmimoto.github.io/R/heart0.txt
+library(tidyverse)
+Heart <- read_csv(file="https://nmimoto.github.io/datasets/heart.csv")
+
+# Rename medv column as resp.
+Heart2 <- Heart %>%
+    select(-"index")  %>%            # remove col named "index"
+    rename(resp=AHD) %>%             # rename the column
+    relocate(resp) %>%               # move "resp" to 1st column
+    mutate(resp=as.factor(resp),     # Turn these columns to <factor> instead of <double>
+           ChestPain=as.factor(ChestPain),
+           Thal=as.factor(Thal),
+           Sex=as.factor(Sex),
+           Fbs=as.factor(Fbs),
+           RestECG=as.factor(RestECG),
+           ExAng=as.factor(ExAng))
+
+# Low p-value from Chi-sq test of association
+#  3 4 8 10 11 12 13 14
+#  "Sex" "ChestPain" "RestECG" "ExAng" "Oldpeak" "Slope" "Ca" "Thal"
+# High p-value from Chi-sq test of association
+#  7
+#  "Fbs"
+
+
+# need to remove rows with NA.
+Orig <- Heart2
+
+#- Check for N/A in data. Remove if there's any.
+  summary(Orig)
+  dim(Orig)
+  sum(is.na(Orig))
+  # If there is na in the data, run below
+  Orig <- Orig %>% na.omit()
+  dim(Orig)
+
+
+###-------------------------------------------------------
+###--- 1. Data Separation (Copied from Rtut-CV)
+Orig <- Orig         # Entire Data set (have to be data.frame)
+train.size <- 250    #num of rows for training set
+test.size <-  47     # num of rows for testing set
+my.seed <-1534       # give a seed
+
+  ###
+  ### This line replaces the AAAA to BBBB chunk
+  source('https://nmimoto.github.io/R/ML-00.txt')
+  ###
+
+# Output (all data.frame):
+#   Train.set      /  Train.resp
+#   Test.set       /  Test.resp
+#   CV.train[[k]]  /  CV.train.resp[[k]]
+#   CV.valid[[k]]  /  CV.valid.resp[[k]]
+
+
+
+
+#--- 2.1
+# Visualization doesn't help much any more
+ix_no = (Train.set$resp=="No")
+ix_yes = (Train.set$resp=="Yes")
+plot(Train.set$RestBP[ix_no], Train.set$Chol[ix_no], xlab="RestBp", ylab="Chol")
+lines(Train.set$RestBP[ix_yes], Train.set$Chol[ix_yes], col="red", type="p")
+
+
+
+
+
+###-------------------------------------------------------
+###--- 2. Logistic Regression with CV
+
+AUCs <- MSE.valid <- matrix(0, 5, 2)
+colnames(AUCs) = c("Train AUC", "Valid AUC")
+for (k in 1:5) {
+
+    Fit00 <- glm(resp ~. , family=binomial, data=CV.train[[k]])     # <----- Change model here
+
+    #- Extract fitted response (training)
+    Train.prob =predict(Fit00, type ="response")  # fitted responses
+    #- Predict in Validation Set
+    Valid.prob = predict(Fit00, newdata=CV.valid[[k]], type="response")
+
+    #- Check the training set accuracy
+    library(caret)
+    library(pROC)
+    # Train.pred = ifelse(Train.prob > threshold, "Yes", "No")  # Turn the fitted values to Up/Down using threshold of .5
+    # Valid.pred = ifelse(Valid.prob > threshold, "Yes", "No")
+    # CM.train <- confusionMatrix(factor(Train.pred),  factor(as.matrix(CV.train.resp[[k]])), positive="Yes")
+    # CM.valid  <- confusionMatrix(factor(Valid.pred), factor(as.matrix(CV.valid.resp[[k]])), positive="Yes")
+
+    AUCs[k,] <- round(c(auc(factor(as.matrix(CV.train.resp[[k]])), Train.prob, levels=c("No", "Yes")),
+                        auc(factor(as.matrix(CV.valid.resp[[k]])), Valid.prob, levels=c("No", "Yes"))), 4)
+
+}
+AUCs
+
+Av.AUCs = apply(AUCs, 2, mean)
+names(Av.AUCs) = c("Av.Train AUC", "Av.Valid AUC")
+Av.AUCs
+
+
+###
+###   Make decision about best model based on Av Valid AUC
+###
+
+
+
+###----------------------------
+###--- 3. Final Training/Test fit using best model
+
+### Best model
+Fit03 <- glm(resp ~ .,  family=binomial, data=Train.set)
+summary(Fit03)
+
+
+###---
+Fit00 = Fit03
+
+#- Extract fitted response (training)
+Train.prob =predict(Fit00, type ="response")
+head(Train.prob)
+
+#- Predict in Test Set
+Test.prob = predict(Fit00, newdata=Test.set, type="response")
+head(Test.prob)
+
+
+###----------------------------
+#- 3a Output result for given threshold value
+threshold = .9   # pick a threshold
+
+    #- Check the training set accuracy
+    library(caret)
+    Train.pred = ifelse(Train.prob > threshold, "Yes", "No")  # Turn the fitted values to Up/Down using threshold of .5
+    Test.pred  = ifelse(Test.prob  > threshold, "Yes", "No")
+    CM.train <- confusionMatrix(factor(Train.pred), factor(as.matrix(Train.resp)), positive="Yes")
+    CM.test  <- confusionMatrix(factor(Test.pred),  factor(as.matrix(Test.resp)),  positive="Yes")
+
+    CM.train            # Training set result
+    CM.train$table      # output just the table
+
+    CM.train[["byClass"]][["Sensitivity"]]
+    CM.train[["byClass"]][["Specificity"]]
+
+    CM.test             # Testing set
+    CM.test$table      # output just the table
+
+    # Test set result
+    #               Reference
+    # Prediction      No Yes
+    #        No     1437  62         [Specificity][  ]  = TrueNeg / sum of col
+    #        Yes       0   1         [  ][Sensitivity]  = TruePos / sum of col
+
+    colSums(CM.test$table) / sum(colSums(CM.test$table))    # % of Actual Yes/No
+    rowSums(CM.test$table) / sum(rowSums(CM.test$table))    # % of predicted Yes/No
+
+
+###----------------------------
+#- 3b Output ROC curve and AUC for all threshold
+library(pROC)
+    #- Training Set
+    plot.roc(factor(as.matrix(Train.resp)),  Train.prob, levels=c("No", "Yes"))
+    # point corresponding to CM.train
+    abline(h=CM.train[["byClass"]][["Sensitivity"]], v=CM.train[["byClass"]][["Specificity"]], col="red")
+    auc.train = auc(factor(as.matrix(Train.resp)), Train.prob, levels=c("No", "Yes"))
+    text(.2, .2, paste("Train AUC=",round(auc.train, 3)))
+
+    #- Test Set
+    plot.roc(factor(as.matrix(Test.resp)),  Test.prob, levels=c("No", "Yes"))
+    # point corresponding to CM.test
+    abline(h=CM.test[["byClass"]][["Sensitivity"]], v=CM.test[["byClass"]][["Specificity"]], col="red")
+    auc.test = auc(factor(as.matrix(Test.resp)), Test.prob, levels=c("No", "Yes"))
+    text(.2, .2, paste("Test AUC=",round(auc.test, 3)))
+
+    c(auc.train, auc.test)
+
+
+
+layout(matrix(1:2, 1, 2))
+    plot.roc(factor(as.matrix(Train.resp)),  Train.prob, levels=c("No", "Yes"))
+    text(.2, .2, paste("Train AUC=",round(auc.train, 3)))
+    plot.roc(factor(as.matrix(Test.resp)),  Test.prob, levels=c("No", "Yes"))
+    text(.2, .2, paste("Test AUC=",round(auc.test, 3)))
+    layout(1)
+
+
+
+plot(AUCs[,2], col="red", ylim=c(.5,1))
+lines(AUCs[,1], type="p")
+abline(h=auc.test)
+
+AUCs
+Av.AUCs
+c(auc.train, auc.test)
+
+
+
+###-------------------------------------------------------
+###--- 4. Determine the Best Threshold
+
+#--- Decide on Threshould penalty
+#cost.list = c(1,1,1,1)/4           # order of (TP, TN, FP, FN)
+cost.list = c(0,0,3,1)/4           # order of (TP, TN, FP, FN)
+#cost.list = c(0,0,1,1)/2           # order of (TP, TN, FP, FN)
+#cost.list = c(0,0,1,2)/3           # order of (TP, TN, FP, FN)
+#cost.list = c(0,0,1,3)/4           # order of (TP, TN, FP, FN)
+
+
+
+threshold.list = seq(0.01,.99,.01)    # grid for threshold
+cost=0
+library(caret)      # for confusionMatrix
+for (i in 1:length(threshold.list)){
+
+    threshold = threshold.list[i]
+
+    #- Check the training set accuracy
+    Test.pred  = ifelse(Test.prob  > threshold, "Yes", "No")
+    CM.test  <- confusionMatrix(factor(Test.pred),
+                                factor(as.matrix(Test.resp)),
+                                positive="Yes")
+    TP = CM.test$table[2,2]   # True  Pos
+    TN = CM.test$table[1,1]   # True  Neg
+    FP = CM.test$table[2,1]   # False Pos
+    FN = CM.test$table[1,2]   # False Neg
+
+    cost[i] = sum(c(TP, TN, FP, FN) * cost.list)
+}
+plot(threshold.list, cost, xlab="threshold")
+
+cost.list
+which.min(cost)
+min(cost)
+threshold.list[which.min(cost)]
+
