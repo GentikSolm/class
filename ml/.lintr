@@ -1,0 +1,2 @@
+lint(fileName, with_defaults(object_name_linter = NULL))
+

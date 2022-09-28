@@ -217,11 +217,10 @@ c(auc.train, auc.test)
 
 #--- Decide on Threshould penalty
 #cost.list = c(1,1,1,1)/4           # order of (TP, TN, FP, FN)
-cost.list = c(0,0,3,1)/4           # order of (TP, TN, FP, FN)
+#cost.list = c(0,0,3,1)/4           # order of (TP, TN, FP, FN)
 #cost.list = c(0,0,1,1)/2           # order of (TP, TN, FP, FN)
 #cost.list = c(0,0,1,2)/3           # order of (TP, TN, FP, FN)
-#cost.list = c(0,0,1,3)/4           # order of (TP, TN, FP, FN)
-
+cost.list = c(0,0,1,3)/4           # order of (TP, TN, FP, FN)
 
 
 threshold.list = seq(0.01,.99,.01)    # grid for threshold
