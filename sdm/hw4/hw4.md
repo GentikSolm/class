@@ -2,7 +2,7 @@
 
 First, I read in the contents of the file into a dataset, assigning only the values needed for test scores.
 
-![](means.png)
+![](mean.png)
 
 According to the data, The mean score went dramatially down after the seminar.
 The educational seminar seems to have confused the participants causing them to yeild
