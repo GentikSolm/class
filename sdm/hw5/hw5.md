@@ -15,3 +15,54 @@ The mens Email campaign seems to have been much more successfull than the womens
 
 ![](excell_pivot.png)
 ![](excell.png)
+
+### SAS
+
+```sas
+PROC IMPORT DATAFILE='/home/u62253726/sasuser.v94/EmailIndicator.csv'
+	OUT=mylib.indicator
+	replace;
+RUN;
+
+PROC IMPORT DATAFILE='/home/u62253726/sasuser.v94/EmailTest1.csv'
+	OUT=mylib.email1
+	replace;
+RUN;
+PROC IMPORT DATAFILE='/home/u62253726/sasuser.v94/EmailTest2.csv'
+	OUT=mylib.email2
+	replace;
+RUN;
+
+DATA mylib.emailtemp;
+	SET mylib.email1 mylib.email2;
+RUN; 
+
+DATA mylib.email;
+	MERGE mylib.emailtemp mylib.indicator;
+RUN; 
+
+PROC FREQ
+	DATA=mylib.email;
+	TABLES Segment*Conversion Segment*Visit;
+RUN;
+
+PROC MEANS
+	DATA=mylib.email;
+	VAR Spend Conversion Visit;
+	CLASS Segment;
+	OUTPUT out=MEAN;
+RUN;
+
+PROC PRINT
+	DATA=MEAN
+	noobs;
+RUN;
+```
+
+According to SAS output, it seems to disagree with the output from excell, which makes me believe something went awry in merging the data via xlookup
+With that being said, SAS data points to Mens email doing slightly worse in most areas other than spending. Men spent an average of $1.28,
+while women spent an average of 1.211. This is skewed since most people did not actually buy products, infact only around 1% actually bought product
+in the following two weeks after the email campaign. Lastly, it seems that both men and women visited the site in relativley equal amounts.
+
+![](sas.png)
+![](sas_mean.png)
