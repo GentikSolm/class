@@ -59,10 +59,19 @@ PROC PRINT
 RUN;
 ```
 
-According to SAS output, it seems to disagree with the output from excell, which makes me believe something went awry in merging the data via xlookup
+According to SAS output, it seems to disagree with the output from excell and SPSS, which makes me believe something went awry in merging the data in sas
 With that being said, SAS data points to Mens email doing slightly worse in most areas other than spending. Men spent an average of $1.28,
 while women spent an average of 1.211. This is skewed since most people did not actually buy products, infact only around 1% actually bought product
 in the following two weeks after the email campaign. Lastly, it seems that both men and women visited the site in relativley equal amounts.
 
 ![](sas.png)
 ![](sas_mean.png)
+
+### SPSS
+
+According to SPSS output, the statistics look about identical to the Excell reports, with the men beating the women on most fronts. According to SPSS,
+Men spent about .5c more on average. Again, as with excell, these are skewed since most people did not buy products. Men were more likely to make purchases from the site, at 267 vs womens 189 conversions.
+
+![](spss.png)
+![](spss_cross.png)
+![](spss_spend.png)
