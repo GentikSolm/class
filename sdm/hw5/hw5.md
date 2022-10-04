@@ -37,8 +37,20 @@ DATA mylib.emailtemp;
 	SET mylib.email1 mylib.email2;
 RUN; 
 
+PROC SORT
+	DATA=mylib.emailtemp;
+	BY ID;
+RUN;
+
+PROC SORT
+	DATA=mylib.indicator;
+	BY ID;
+RUN;
+
+
 DATA mylib.email;
 	MERGE mylib.emailtemp mylib.indicator;
+	BY ID;
 RUN; 
 
 PROC FREQ
@@ -59,13 +71,12 @@ PROC PRINT
 RUN;
 ```
 
-According to SAS output, it seems to disagree with the output from excell and SPSS, which makes me believe something went awry in merging the data in sas
-With that being said, SAS data points to Mens email doing slightly worse in most areas other than spending. Men spent an average of $1.28,
-while women spent an average of 1.211. This is skewed since most people did not actually buy products, infact only around 1% actually bought product
-in the following two weeks after the email campaign. Lastly, it seems that both men and women visited the site in relativley equal amounts.
+SAS data also points to Mens email doing better in all areas. Men spent an average of $1.42,
+while women spent an average of $1.07. This is skewed since most people did not actually buy products, infact only around 1% actually bought product
+in the following two weeks after the email campaign. Lastly, it shows that men visited the site slightly more than women did, where 9.12% of men visited the site from the email, where only 7.58% visited from the womens email
 
 ![](sas.png)
-![](sas_mean.png)
+![](sas_means.png)
 
 ### SPSS
 
