@@ -14,3 +14,4 @@ Part C:
 The mens Email campaign seems to have been much more successfull than the womens campaign. On all metrics (Total visits, Money Spent in the following weeks, and total conversion) the mens campaign out performed the womens.  
 
 ![](excell_pivot.png)
+![](excell.png)
