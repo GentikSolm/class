@@ -23,6 +23,11 @@
 #    Make sure you are using "tidyverse" package and
 #    function read_csv() instead of read.csv().
 
+library(MASS)                # install.packages("MASS")
+library(tidyverse)           # install.packages("tidyverse")
+super <- read_csv(file = "https://nmimoto.github.io/datasets/superconduct.csv")
+attach(super)
+
 
 # 2. ----------------
 #    In the dataset, remove column "X1".
@@ -30,12 +35,32 @@
 #    Since this data is too large, take a random sample of 1200 rows
 #    using seed "1234". (Similarly to what was done in Ch6 Lab-4 Super0).
 
+super <- super %>%
+    #!!! X1 doesnt exist
+    rename(resp = critical_temp) %>%
+    relocate(resp)
+
+my.seed <- 1234
+set.seed(my.seed)
+super <- super[sample(nrow(super), 1200), ]
 
 # 3. ----------------
 #    Using seed "1234", separate the dataset into a training set with 1000 observations
 #    and a testing set with 200 observations.  Separate the training set into 5-folds of
 #    200 obs each.
 
+Orig <- super
+train.size <- 1000
+test.size <- 200
+source('https://nmimoto.github.io/R/ML-00.txt')
+
+# Output (all data.frame):
+Train.set      #  Train.resp
+Test.set       #  Test.resp
+CV.train[[k]]  #  CV.train.resp[[k]]
+CV.valid[[k]]  #  CV.valid.resp[[k]]
+
+length(CV.train) # 5 folds
 
 # 4. ----------------
 #    Using lm() function, perform regular OLS (multiple regression) on
@@ -43,6 +68,18 @@
 #    How many predictor is in the model?
 #    Use the model to predict "resp" in the test set.
 #    Report training RMSE and test RMSE.
+
+Fit1 <- lm(resp ~., data=Train.set) # All variables
+summary(Fit1) ## With 82 columns, 1 being resp, there are 81 predictors. However, of these
+# Only around 27 of these columns seem to hold statistical significance in comparison
+# to the response variable
+
+Train.fitted = predict(Fit1, newdata=Train.set)
+Test.pred    = predict(Fit1, newdata=Test.set)
+
+plot( Train.fitted, as.matrix(Train.resp), xlab="Fitted", ylab="Actual",main="Final Test.set fit")
+lines(Test.pred, as.matrix(Test.resp), type="p", xlab="Fitted", ylab="Actual", col="red", pch=20)
+abline(0,1)
 
 
 # 5. ----------------
