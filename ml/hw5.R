@@ -81,6 +81,16 @@ plot( Train.fitted, as.matrix(Train.resp), xlab="Fitted", ylab="Actual",main="Fi
 lines(Test.pred, as.matrix(Test.resp), type="p", xlab="Fitted", ylab="Actual", col="red", pch=20)
 abline(0,1)
 
+library(caret)
+OLS <- data.frame(
+  tr.RMSE      = caret::RMSE(Train.fitted, as.matrix(Train.resp)),
+  tr.Rsquare   = caret::R2(  Train.fitted,           Train.resp),
+  test.RMSE    = caret::RMSE(Test.pred,    as.matrix(Test.resp)),
+  test.Rsquare = caret::R2(  Test.pred,              Test.resp)
+)
+
+# Training RMSE and test RMSE
+OLS
 
 # 5. ----------------
 #    Using cv.glmnet() function in glmnet package, use 5-fold CV to determine
@@ -90,13 +100,63 @@ abline(0,1)
 #    Then use the model to predict "resp" in the test set.
 #    Report training RMSE and test RMSE.
 
+library(glmnet)
+
+set.seed(my.seed)
+x <- model.matrix(resp ~. , Train.set)[,-1]
+x.train <- model.matrix(resp ~., Train.set)[,-1]
+x.test  <- model.matrix(resp ~., Test.set)[,-1]
+y <- Train.set$resp
+
+CV.for.lambda <- cv.glmnet(x, y, alpha = 1, nfolds=5)
+CV.for.lambda$lambda.min
+FitLasso <- glmnet(x, y, alpha = 1, lambda = CV.for.lambda$lambda.min)
+coef(FitLasso)
+summary(Fit1)
+
 
 # 6. ----------------
 #    Compare coeficients of OLS to LASSO, side by side.
 #    Indicate the parameters that is suppresed significantly (by your eye).
+
+cbind(coef(Fit1), coef(FitLasso))
+# Some parameters were significantly supressed
+# Including but not limited to:
+#   mean_atomic_mass
+#   wtd_mean_atomic_mass
+#   wtd_gmean_atomic_mass
+#   entropy_atomic_mass
+#   mean_fie
+#   wtd_gmean_fie
+#   wtd_gmean_fie
+#   wtd_gmean_atomic_radius
+#   entropy_Density
+
+# Get training / validation fit
+Train.fitted <- as.vector(predict(FitLasso, x.train))
+Test.pred   <- as.vector(predict(FitLasso, x.test))
+
+# Plot Y vs Yhat
+plot( Train.fitted, as.matrix(Train.resp), xlab="Fitted", ylab="Actual",main="Final Test.set fit")
+lines(Test.pred, as.matrix(Test.resp), type="p", xlab="Fitted", ylab="Actual", col="red", pch=20)
+abline(0,1)
 
 
 # 7. ----------------
 #    Did LASSO regression improve training fit compared to OLS?
 #    How about test fit?
 
+Lasso <- data.frame(
+  tr.RMSE      = caret::RMSE(Train.fitted, as.matrix(Train.resp)),
+  tr.Rsquare   = caret::R2(  Train.fitted,           Train.resp),
+  test.RMSE    = caret::RMSE(Test.pred,    as.matrix(Test.resp)),
+  test.Rsquare = caret::R2(  Test.pred,              Test.resp)
+)
+Lasso
+
+OLS
+# Similarly to as in class, the Lasso regression is very similar in comparison to
+# OLS. The test RMSE is slightly better in Lasso, and slightly worse in test RSquare
+# This still shows how powerfull lasso is, since we did not have to manually assign which
+# paramaters to use, this makes it much more straight forward to use, and we can even use it
+# to determine what variables have significant impacts on the response variable
