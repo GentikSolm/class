@@ -28,7 +28,7 @@ fx = @(x) x*exp(-x);
 fpx = @(x)  exp(-x)-x*exp(-x);
 tol = eps('single');
 x0 = .5;
-est = Newtons(fx, fpx, tol, x0, 0, 2);
+est = Newtons(fx, fpx, tol, x0, 0);
 disp("F(x) = " + func2str(fx))
 disp("F(x0) = " + x0)
 disp("With tolerance of " + tol)
@@ -40,7 +40,7 @@ fx = @(x) 2-exp(x);
 fpx = @(x)  -exp(x);
 tol = eps('single');
 x0 = .5;
-est = Newtons(fx, fpx, tol, x0, log(2), 2);
+est = Newtons(fx, fpx, tol, x0, log(2));
 disp("F(x) = " + func2str(fx))
 disp("F(x0) = " + x0)
 disp("With tolerance of " + tol)
@@ -51,7 +51,7 @@ fx = @(x) 2-exp(x);
 fpx = @(x)  -exp(x);
 tol = eps('single');
 x0 = 1.5;
-est = Newtons(fx, fpx, tol, x0, log(2), 2);
+est = Newtons(fx, fpx, tol, x0, log(2));
 disp("F(x) = " + func2str(fx))
 disp("F(x0) = " + x0)
 disp("With tolerance of " + tol)
@@ -64,11 +64,12 @@ fx = @(x) x*exp(-x);
 fpx = @(x)  exp(-x)-x*exp(-x);
 tol = eps('single');
 x0 = .5;
-est = Newtons(fx, fpx, tol, x0, 0, 2.0001);
+est = Newtons(fx, fpx, tol, x0, 0);
 disp("F(x) = " + func2str(fx))
 disp("F(x0) = " + x0)
 disp("With tolerance of " + tol)
 disp("Final estimation: " + est)
+disp("With P at (2.0001), we see the ratio becomes imaginary, which i have no idea what that implies")
 disp("In terms of convergence, we see that with p close to 2, our ratio moves much closer to 1 ")
 disp(" ")
 
@@ -77,22 +78,10 @@ fx = @(x) 1-exp(x.^2);
 fpx = @(x)  -2*x*exp(x.^2);
 tol = eps('single');
 x0 = 1;
-est = Newtons(fx, fpx, tol, x0, 0, 2);
+est = Newtons(fx, fpx, tol, x0, 0);
 disp("F(x) = " + func2str(fx))
 disp("F(x0) = " + x0)
 disp("With tolerance of " + tol)
 disp("Final estimation: " + est)
-disp("Using ratio p=2, we see an extremly high ratio, meaning the order of convergence is most likly not P")
-disp(" ")
+disp("Using ratio p=2
 
-fx = @(x) 1-exp(x.^2);
-fpx = @(x)  -2*x*exp(x.^2);
-tol = eps('single');
-x0 = 1;
-est = Newtons(fx, fpx, tol, x0, 0, 1);
-disp("F(x) = " + func2str(fx))
-disp("F(x0) = " + x0)
-disp("With tolerance of " + tol)
-disp("Final estimation: " + est)
-disp("Using ratio p=1, we see a much more normal ratio around .5, meaning")
-disp(" ")
