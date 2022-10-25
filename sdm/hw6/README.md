@@ -1,4 +1,8 @@
 # SAS
+
+![](./sasdata.png)  
+![](./sas1.png)
+
 ```sas
 PROC IML;
 	X={126974 4224 173297
