@@ -36,6 +36,8 @@ QUIT;
 ```
 
 ### SPSS
+
+![](./spss.png)
 ```spss
 MATRIX.
 COMPUTE X={
