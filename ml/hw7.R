@@ -14,13 +14,31 @@
 
 # 1. ----------------
 #    Load concrete.csv from https://nmimoto.github.io/datasets/ as a tibble.
+library(tidyverse)   # install.packages(tidyverse")
+concrete <- read_csv("https://nmimoto.github.io/datasets/concrete.csv")
+concrete <- as_tibble(concrete)
+attach(concrete)
+concrete
 
 
 # 2. ----------------
 #    Using seed "8346", separate the dataset into a training set with 850 observations
 #    and a testing set with 180 observations.  Separate the training set into 5-folds of
 #    170 obs each.
+my.seed <- 8346
+set.seed(my.seed)
+train.size <- 850
+test.size <- 180
+Orig <- concrete
+source('https://nmimoto.github.io/R/ML-00.txt')
 
+# Output (all data.frame):
+Train.set      #  Train.resp
+Test.set       #  Test.resp
+CV.train[[k]]  #  CV.train.resp[[k]]
+CV.valid[[k]]  #  CV.valid.resp[[k]]
+
+length(CV.train) # 5 folds
 
 # 3. ----------------
 #    Perform Training/Test fit of multiple regression with all variables
@@ -50,3 +68,4 @@
 #    re-calculate the test RMSE.
 #    Compare it to the Test RMSE from (3). Which model has more
 #    prediction power?  Which model is easier to interprete?
+
