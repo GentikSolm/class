@@ -63,10 +63,11 @@ PROC SQL;
 RUN;
 
 PROC SQL;
-	SELECT p.ProductName, SUM(o.Quantity) * o.UnitPrice as TotalSales
+	SELECT p.ProductName, SUM(o.Quantity) * p.UnitPrice as TotalSales, SUM(o.Quantity) as Quantity
 	FROM mylib.'Order Details'n as o
 	LEFT JOIN mylib.Products as p on o.ProductID = p.ProductID
-	GROUP BY o.ProductID, o.UnitPrice, p.ProductName
+	WHERE p.Discontinued = 'Yes'
+	GROUP BY p.ProductID, p.ProductName, p.UnitPrice
 	ORDER BY p.ProductName;
 RUN;
 
@@ -76,6 +77,6 @@ PROC SQL;
 	LEFT JOIN mylib.Shippers as s on o.ShipVia = s.ShipperID
 	WHERE CompanyName LIKE 'United Package'
 	AND ShippedDate >= '01JAN95'd AND ShippedDate < '01JAN96'd
-	GROUP BY ShippedDate;
+	GROUP BY ShippedDate, CompanyName;
 RUN;
 ```
