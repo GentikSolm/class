@@ -118,7 +118,7 @@ lines(CV.valid[[fold]]$lstat, CV.valid[[fold]]$resp, type="p", col="red", pch=19
 ###-------------------------------------------------
 ###--- 2. Newral Network with manual CV
 
-library(neuralnet)            # install.packages('neuralnet', repos='https://cran.case.edu/')
+library(neuralnet)
 sigmoid <- function(x) 1 / (1 + exp(-x))
 
 layout(matrix(1:6, 2, 3, byrow=TRUE))    # to plot 5 in 1 page
